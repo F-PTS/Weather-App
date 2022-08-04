@@ -2,10 +2,12 @@ const express = require('express');
 const path = require('path');
 const hbs = require('hbs');
 
-const app = express();
+const weather = require('./utils/weather');
 
 const viewsPath = path.join(__dirname, '../templates/views');
 const partialsPath = path.join(__dirname, '../templates/partials');
+
+const app = express();
 
 app.set('view engine', 'hbs');
 app.set('views', viewsPath);
@@ -34,7 +36,7 @@ app.get('/help', (req, res) => {
     })
 })
 
-app.get('/weather', (req, res) => {
+app.get('/weather', async (req, res) => {
 
     if(!req.query.adress) {
         return res.send({
@@ -42,11 +44,24 @@ app.get('/weather', (req, res) => {
         })
     }
 
+    const weatherData = await weather(req.query.adress);
+
+    console.log(weatherData);
+
+    if(weatherData.err) {
+        return res.send({error: weatherData.err})
+    }
+
+    console.log(weatherData);
+
     res.send({
-        forecast: 'It is sunny',
-        location: 'Poland',
-        adress: req.query.adress
-    })
+        forecast: weatherData.weather[0],
+        city: req.query.adress,
+        location: weatherData.locationName,
+        country: weatherData.country,
+        temperature: weatherData.temperature,
+        feelsLike: weatherData.feelsLike
+    });
 });
 
 // app.get('/products', (req, res) => {
