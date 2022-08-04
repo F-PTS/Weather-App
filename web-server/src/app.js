@@ -35,11 +35,32 @@ app.get('/help', (req, res) => {
 })
 
 app.get('/weather', (req, res) => {
+
+    if(!req.query.adress) {
+        return res.send({
+            error: 'you must provide an adress'
+        })
+    }
+
     res.send({
         forecast: 'It is sunny',
-        location: 'Poland'
+        location: 'Poland',
+        adress: req.query.adress
     })
 });
+
+// app.get('/products', (req, res) => {
+//     if(!req.query.search) {
+//         return res.send({
+//             error: 'you must provide a search term'
+//         })
+//     }
+
+//     console.log(req.query.search);
+//     res.send({
+//         products: []
+//     })
+// })
 
 app.get('*', (req, res) => {
     res.send("404! The page doesn't exist")
